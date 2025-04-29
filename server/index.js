@@ -7,6 +7,8 @@ import dotenv from 'dotenv';
 // Подключаем cors
 import cors from 'cors';
 
+import authRoute from './routes/auth.js';
+
 // Создаём приложение
 const app = express();
 // Подключаем dotenv
@@ -22,12 +24,11 @@ app.use(cors());
 // Чтобы отсылать данные в формате json
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.json({ message: 'All is Fine' });
-});
+// Router
+app.use('/api/auth', authRoute);
 
 try {
-  await mongoose.connect('mongodb://localhost:27017');
+  await mongoose.connect('mongodb://localhost:27017/Forum_Diplom');
   // Запускаем сервер
   app.listen(DB_PORT, () => {
     console.log(`Server started on port ${DB_PORT}`);
