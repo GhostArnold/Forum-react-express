@@ -1,11 +1,11 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import AddPostPage from '../pages/AddPostPage';
 import EditPostPage from '../pages/EditPostPage';
-import LoginPage from '../pages/LoginPage';
+import LoginPage from '../pages/LoginPage/LoginPage';
 import MainPage from '../pages/MainPage/MainPage';
 import PostPage from '../pages/PostPage';
 import PostsPage from '../pages/PostsPage';
-import RegisterPage from '../pages/RegisterPage';
+import RegisterPage from '../pages/RegisterPage/RegisterPage';
 // Для меню
 import MainLayout from '../components/Layout/MainLayout';
 import './App.scss';
