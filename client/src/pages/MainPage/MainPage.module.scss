@@ -1,6 +1,34 @@
 .header {
-  height: 85vh;
-  background-image: url('../../assets/img/mountains.jpg');
+  height: 90.8vh;
+  background-image: url('../../assets/img/mountains-dark.jpg');
   background-size: cover;
   background-repeat: no-repeat;
+
+  .main {
+    padding-top: 50px;
+    padding-left: 45px;
+    color: #f1f1e4;
+    position: relative;
+    .stiker {
+      position: absolute;
+      right: 145px;
+      top: 125px;
+    }
+    .main__title {
+      font-size: 35px;
+    }
+
+    .sub__title {
+      font-size: 20px;
+      margin-top: 45px;
+      width: 45%;
+      letter-spacing: 3px;
+
+      span {
+        display: inline-block;
+        margin-bottom: 3px;
+        background-color: rgb(156, 156, 14);
+      }
+    }
+  }
 }

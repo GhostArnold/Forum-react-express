@@ -30,7 +30,7 @@ const Menu = () => {
             Добавить пост
           </NavLink>
         </div>
-        <div>
+        <div className={style.btn}>
           <NavLink to="/login">
             <button>Войти</button>
           </NavLink>
