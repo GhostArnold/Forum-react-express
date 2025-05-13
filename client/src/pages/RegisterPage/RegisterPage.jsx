@@ -1,13 +1,31 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { registerUser } from '../../redux/features/auth/authSlice';
 import styles from './Register.module.scss';
+// Для отображения окна с ошибкой или успехом
+import { toast } from 'react-toastify';
+// Очистка статуса
+import { clearStatus } from '../../redux/features/auth/authSlice';
+
 const RegisterPage = () => {
   // Состояния для юзеров
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const { status } = useSelector((state) => state.auth);
+  console.log(status);
   const dispatch = useDispatch();
+
+  // useEffect срабатывает при изменении зависимости -
+  //  в этом, при изменении значения status.
+  useEffect(() => {
+    if (status) {
+      // Показываем уведомление только при изменении статуса
+      toast(status);
+      dispatch(clearStatus());
+    }
+    // В useEffect рекомендуется добавлять dispatch в массив зависимостей, потому что линтер React (например, ESLint с плагином для хуков) требует, чтобы все внешние переменные, используемые внутри эффекта, были указаны в зависимостях.
+  }, [status, dispatch]);
 
   const handleSubmit = () => {
     try {

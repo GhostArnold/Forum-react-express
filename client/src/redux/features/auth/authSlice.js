@@ -43,7 +43,12 @@ export const authSlice = createSlice({
   // 2. Начальное состояние
   initialState,
   // Синхронные редьюсеры
-  reducers: {},
+  reducers: {
+    // Для обнуления статуса для окна ошибки
+    clearStatus(state) {
+      state.status = null;
+    },
+  },
   // Ассинхронные редьюсеры
   extraReducers: (builder) => {
     // Это специальный объект, который помогает добавлять обработчики для асинхронных экшенов.
@@ -76,3 +81,5 @@ export const authSlice = createSlice({
 });
 
 export default authSlice.reducer;
+// Экспортируем action creator для сброса статуса
+export const { clearStatus } = authSlice.actions;

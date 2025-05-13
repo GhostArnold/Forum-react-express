@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import AddPostPage from '../pages/AddPostPage';
 import EditPostPage from '../pages/EditPostPage';
 import LoginPage from '../pages/LoginPage/LoginPage';
@@ -8,6 +8,8 @@ import PostsPage from '../pages/PostsPage';
 import RegisterPage from '../pages/RegisterPage/RegisterPage';
 // Для меню
 import MainLayout from '../components/Layout/MainLayout';
+// Для обработки ошибок
+import { ToastContainer } from 'react-toastify';
 import './App.scss';
 
 function App() {
@@ -35,6 +37,8 @@ function App() {
           <Route />
         </Route>
       </Routes>
+      {/* Будет отображаться везде снизу справа */}
+      <ToastContainer position="bottom-right" />
     </div>
   );
 }
