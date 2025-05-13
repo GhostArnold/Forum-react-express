@@ -32,12 +32,21 @@ export const register = async (req, res) => {
       password: hash, // Сохраняем хеш вместо чистого пароля
     });
 
+    const token = jwt.sign(
+      {
+        id: newUser._id, // В payload токена записываем ID пользователя
+      },
+      process.env.JWT_SECRET, // Секретный ключ из переменных окружения
+      { expiresIn: '30d' } // Срок действия токена - 30 дней
+    );
+
     // 6. Сохраняем пользователя в базу данных
     await newUser.save();
 
     // 7. Отправляем успешный ответ с данными нового пользователя
     res.json({
       newUser, // Можно заменить на newUser.toObject(), чтобы убрать служебные поля
+      token,
       message: 'Регистрация прошла успешно',
     });
   } catch (error) {
