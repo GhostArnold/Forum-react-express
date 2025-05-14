@@ -1,15 +1,36 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './LoginPage.module.scss';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { checkIsAuth, loginUser } from '../../redux/features/auth/authSlice';
 const LoginPage = () => {
   // Состояния для инпутов
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const onSubmitHandler = (e) => {
-    e.preventDefault();
-    setEmail('');
-    setPassword('');
+  const { status } = useSelector((state) => state.auth);
+  const isAuth = useSelector(checkIsAuth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (status) {
+      toast(status);
+    }
+    if (isAuth) {
+      navigate('/');
+    }
+  }, [status, isAuth, navigate]);
+
+  const onSubmitHandler = () => {
+    try {
+      dispatch(loginUser({ username, password }));
+      setUsername('');
+      setPassword('');
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -23,13 +44,17 @@ const LoginPage = () => {
             </div>
           </div>
           <div className={styles.right}>
-            <form action="" className={styles.form} onSubmit={onSubmitHandler}>
+            <form
+              action=""
+              className={styles.form}
+              onSubmit={(e) => e.preventDefault()}
+            >
               <h2>Авторизация</h2>
               <input
                 type="email"
                 placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
               <input
                 type="password"
@@ -40,7 +65,11 @@ const LoginPage = () => {
               <p>
                 <a href="">Забыли пароль?</a>
               </p>
-              <button type="submit" className={styles.btn}>
+              <button
+                type="submit"
+                className={styles.btn}
+                onClick={onSubmitHandler}
+              >
                 Войти
               </button>
               <p className={styles.not_account}>

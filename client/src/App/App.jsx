@@ -11,8 +11,16 @@ import MainLayout from '../components/Layout/MainLayout';
 // Для обработки ошибок
 import { ToastContainer } from 'react-toastify';
 import './App.scss';
+import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import { getMe } from '../redux/features/auth/authSlice';
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getMe());
+  }, [dispatch]);
   return (
     //  BrowserRouter:  Оборачивает все приложение
     //  и предоставляет функциональность маршрутизации.

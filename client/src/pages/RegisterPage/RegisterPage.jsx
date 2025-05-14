@@ -1,7 +1,7 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { registerUser } from '../../redux/features/auth/authSlice';
+import { checkIsAuth, registerUser } from '../../redux/features/auth/authSlice';
 import styles from './Register.module.scss';
 // Для отображения окна с ошибкой или успехом
 import { toast } from 'react-toastify';
@@ -13,19 +13,25 @@ const RegisterPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { status } = useSelector((state) => state.auth);
+  const isAuth = useSelector(checkIsAuth);
   console.log(status);
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   // useEffect срабатывает при изменении зависимости -
   //  в этом, при изменении значения status.
   useEffect(() => {
     if (status) {
       // Показываем уведомление только при изменении статуса
       toast(status);
+      // Очищаем статус, чтобы окно не появлялось каждый раз, когда мы переходим на страницу
+      // регистрации
       dispatch(clearStatus());
     }
+    if (isAuth) {
+      navigate('/');
+    }
     // В useEffect рекомендуется добавлять dispatch в массив зависимостей, потому что линтер React (например, ESLint с плагином для хуков) требует, чтобы все внешние переменные, используемые внутри эффекта, были указаны в зависимостях.
-  }, [status, dispatch]);
+  }, [status, dispatch, isAuth, navigate]);
 
   const handleSubmit = () => {
     try {

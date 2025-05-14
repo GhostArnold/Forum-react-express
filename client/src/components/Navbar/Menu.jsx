@@ -1,7 +1,20 @@
 import { NavLink } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
 import style from './Menu.module.scss';
 import profileImg from '../../assets/img/profile.png';
+import { checkIsAuth, logout } from '../../redux/features/auth/authSlice.js';
+
 const Menu = () => {
+  const isAuth = useSelector(checkIsAuth);
+  const dispatch = useDispatch();
+
+  const logoutHandler = () => {
+    dispatch(logout());
+    window.localStorage.removeItem('token');
+    toast('Вы вышли из системы');
+  };
+
   return (
     <div>
       {/* Делаем навбар */}
@@ -17,23 +30,31 @@ const Menu = () => {
           >
             Главная
           </NavLink>
-          <NavLink
-            to="/my-posts"
-            className={({ isActive }) => (isActive ? style.active : '')}
-          >
-            Мои посты
-          </NavLink>
-          <NavLink
-            to="/add-post"
-            className={({ isActive }) => (isActive ? style.active : '')}
-          >
-            Добавить пост
-          </NavLink>
+          {isAuth && (
+            <>
+              <NavLink
+                to="/my-posts"
+                className={({ isActive }) => (isActive ? style.active : '')}
+              >
+                Мои посты
+              </NavLink>
+              <NavLink
+                to="/add-post"
+                className={({ isActive }) => (isActive ? style.active : '')}
+              >
+                Добавить пост
+              </NavLink>
+            </>
+          )}
         </div>
         <div className={style.btn}>
-          <NavLink to="/login">
-            <button>Войти</button>
-          </NavLink>
+          {isAuth ? (
+            <button onClick={logoutHandler}>Выйти</button>
+          ) : (
+            <NavLink to="/login">
+              <button>Войти</button>
+            </NavLink>
+          )}
         </div>
       </nav>
     </div>
