@@ -11,7 +11,7 @@ const Menu = () => {
 
   const logoutHandler = () => {
     dispatch(logout());
-    window.localStorage.removeItem('token');
+    localStorage.removeItem('token'); // Измените window.localStorage на просто localStorage
     toast('Вы вышли из системы');
   };
 

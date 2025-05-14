@@ -19,7 +19,10 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getMe());
+    const token = localStorage.getItem('token');
+    if (token) {
+      dispatch(getMe());
+    }
   }, [dispatch]);
   return (
     //  BrowserRouter:  Оборачивает все приложение

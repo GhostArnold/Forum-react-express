@@ -3,7 +3,7 @@ import axios from '../../../utils/axios';
 
 const initialState = {
   user: null, // Данные пользователя
-  token: null, // JWT-токен
+  token: localStorage.getItem('token') || null, // Добавьте эту строку
   isLoading: false, // Флаг загрузки
   status: null, // Сообщения с сервера (ошибки/успех)
 };
@@ -93,6 +93,7 @@ export const authSlice = createSlice({
       state.token = null;
       state.isLoading = false;
       state.status = null;
+      localStorage.removeItem('token'); // Добавьте эту строку
     },
   },
   // Ассинхронные редьюсеры
@@ -151,10 +152,12 @@ export const authSlice = createSlice({
       })
       .addCase(getMe.fulfilled, (state, action) => {
         state.isLoading = false;
-        // ? - значит - если есть. Типо если токен есть, то мы его в пэйлод засовываем
-        state.status = action.payload?.message;
+        state.status = null;
         state.user = action.payload?.user;
-        state.token = action.payload?.token;
+        state.token = action.payload?.token || state.token;
+        if (action.payload?.token) {
+          localStorage.setItem('token', action.payload.token);
+        }
       })
       .addCase(getMe.rejected, (state, action) => {
         state.isLoading = false;
