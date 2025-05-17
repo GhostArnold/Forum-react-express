@@ -8,7 +8,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 
 import authRoute from './routes/auth.js';
-
+// import postRoute from './routes/posts.js';
 // Создаём приложение
 const app = express();
 // Подключаем dotenv
@@ -26,6 +26,7 @@ app.use(express.json());
 
 // Router
 app.use('/api/auth', authRoute);
+// app.use('/api/posts', postRoute);
 
 try {
   await mongoose.connect('mongodb://localhost:27017/Forum_Diplom');

@@ -38,6 +38,10 @@ export const registerUser = createAsyncThunk(
 );
 
 export const loginUser = createAsyncThunk(
+  // Генерирует три автоматических типа действий:
+  // auth/loginUser/pending — запрос начат.
+  // auth/loginUser/fulfilled — запрос успешен.
+  // auth/loginUser/rejected — запрос завершился ошибкой.
   'auth/loginUser',
   async ({ username, password }, { rejectWithValue }) => {
     try {
