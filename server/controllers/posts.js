@@ -1,29 +1,31 @@
-import Post from '../models/Post';
-import User from '../models/User';
+import Post from '../models/Post.js';
+import User from '../models/User.js';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
-// Create Post
+
 export const createPost = async (req, res) => {
   try {
     const { title, text } = req.body;
     const user = await User.findById(req.userId);
 
-    if (req.files) {
-      let fileName = Date.now().toString() + req.files.images.name;
+    if (req.files?.image) {
+      // Исправлено: проверка на наличие именно image
+      const fileName = Date.now().toString() + req.files.image.name; // Исправлено: image вместо images
       const __dirname = dirname(fileURLToPath(import.meta.url));
-      req.files.image.mv(path.join(__dirname, '..', 'uploads', fileName));
+      await req.files.image.mv(path.join(__dirname, '..', 'uploads', fileName));
 
       const newPostWithImage = new Post({
         username: user.username,
         title,
         text,
-        imgUrl: filename,
+        imgUrl: fileName, // Исправлено: fileName вместо filename
         author: req.userId,
       });
 
       await newPostWithImage.save();
-      await User.findByidAndUpdate(req.userId, {
-        $push: { posts: newPostWithImage },
+      await User.findByIdAndUpdate(req.userId, {
+        // Исправлено: findByIdAndUpdate
+        $push: { posts: newPostWithImage._id }, // Добавляем только ID поста
       });
 
       return res.json(newPostWithImage);
@@ -36,15 +38,20 @@ export const createPost = async (req, res) => {
       imgUrl: '',
       author: req.userId,
     });
+
     await newPostWithoutImage.save();
-    await User.findByidAndUpdate(req.userId, {
-      $push: { posts: newPostWithoutImage },
+    await User.findByIdAndUpdate(req.userId, {
+      // Исправлено: findByIdAndUpdate
+      $push: { posts: newPostWithoutImage._id }, // Добавляем только ID поста
     });
 
-    res.json(newPostWithoutImage);
+    return res.json(newPostWithoutImage);
   } catch (error) {
-    res.json({
+    console.error(error);
+    return res.status(500).json({
+      // Добавлен статус ошибки
       message: 'Что-то пошло не так',
+      error: error.message,
     });
   }
 };

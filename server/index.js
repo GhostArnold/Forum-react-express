@@ -6,9 +6,10 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 // Подключаем cors
 import cors from 'cors';
-
+// Для загрузки картинок
+import fileUpload from 'express-fileupload';
 import authRoute from './routes/auth.js';
-// import postRoute from './routes/posts.js';
+import postRoute from './routes/posts.js';
 // Создаём приложение
 const app = express();
 // Подключаем dotenv
@@ -23,10 +24,13 @@ const DB_PORT = process.env.DB_PORT || 3001;
 app.use(cors());
 // Чтобы отсылать данные в формате json
 app.use(express.json());
+// Для картинок
+app.use(fileUpload());
+app.use(express.static('./uploads/'));
 
 // Router
 app.use('/api/auth', authRoute);
-// app.use('/api/posts', postRoute);
+app.use('/api/posts', postRoute);
 
 try {
   await mongoose.connect('mongodb://localhost:27017/Forum_Diplom');

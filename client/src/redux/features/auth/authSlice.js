@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from '../../../utils/axios';
+import axios from '../../../utils/axios.js';
 
 const initialState = {
   user: null, // Данные пользователя
@@ -64,11 +64,11 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-export const getMe = createAsyncThunk('auth/me', async () => {
+export const getMe = createAsyncThunk('auth/getMe', async () => {
   try {
     // 1. Отправка запроса на сервер
     // data: Ответ сервера (например, { token: '...', user: { ... } }).
-    const { data } = await axios.post('auth/me');
+    const { data } = await axios.get('auth/get');
     // 2. Сохранение токена
     if (data.token) {
       window.localStorage.setItem('token', data.token);
