@@ -93,11 +93,11 @@ export const authSlice = createSlice({
     },
 
     logout: (state) => {
-      state.user = null;
-      state.token = null;
-      state.isLoading = false;
-      state.status = null;
-      localStorage.removeItem('token'); // Добавьте эту строку
+      state.user = null; // Удаляем данные пользователя
+      state.token = null; // Сбрасываем токен
+      state.isLoading = false; // Выключаем возможную загрузку
+      state.status = null; // Очищаем статусы
+      localStorage.removeItem('token'); // Удаляем токен из хранилища
     },
   },
   // Ассинхронные редьюсеры
@@ -158,8 +158,18 @@ export const authSlice = createSlice({
         state.isLoading = false;
         state.status = null;
         state.user = action.payload?.user;
-        state.token = action.payload?.token || state.token;
+        //         1. Логика работы
+        // Если action.payload содержит токен (не null/undefined):
+        // → Новый токен сохраняется в state.token и localStorage.
+        // Пример: Сервер вернул новый токен после обновления.
+
+        // Если токена в ответе нет:
+        // → Сохраняется текущий токен из state.token.
+        // Пример: Сервер подтвердил авторизацию, но не отправил токен, так как старый ещё действителен.
+        //         state.token = action.payload?.token || state.token;
+        // Если есть токен
         if (action.payload?.token) {
+          // Сохраняем токен в localStorage
           localStorage.setItem('token', action.payload.token);
         }
       })
@@ -170,6 +180,10 @@ export const authSlice = createSlice({
   },
 });
 
+// state.auth.token — обращается к состоянию Redux (в части auth) и проверяет наличие токена.
+// Boolean(...) — преобразует значение токена в true/false:
+// Если токен есть (не null, не undefined, не пустая строка) → true (пользователь авторизован).
+// Если токена нет → false (пользователь не авторизован).
 export const checkIsAuth = (state) => Boolean(state.auth.token);
 
 export default authSlice.reducer;
