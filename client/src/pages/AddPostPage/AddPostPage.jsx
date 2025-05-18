@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import line from '../../assets/img/line.png';
 import redPinning from '../../assets/img/red-pinning.png';
 import { createPost } from '../../redux/features/post/postSlice';
+import { useNavigate } from 'react-router-dom';
 import styles from './AddPostPage.module.scss';
 const AddPostPage = () => {
   const [title, setTitle] = useState('');
@@ -10,6 +11,7 @@ const AddPostPage = () => {
   const [image, setImage] = useState('');
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const submitHandler = () => {
     try {
@@ -18,9 +20,15 @@ const AddPostPage = () => {
       data.append('text', text);
       data.append('image', image);
       dispatch(createPost(data));
+      navigate('/');
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const clearFormHandler = () => {
+    setText('');
+    setTitle('');
   };
 
   return (
@@ -33,6 +41,10 @@ const AddPostPage = () => {
             onSubmit={(e) => e.preventDefault()}
           >
             <input type="file" onChange={(e) => setImage(e.target.files[0])} />
+            {/* ЧТобы картинка вставлялась при создании поста */}
+            {/* <div className={styles.postImg}>
+              {image && <img src={URL.createObjectURL(image)} alt="image" />}
+            </div> */}
             <label htmlFor="title">Заголовок поста: </label>
             <input
               id="title"
@@ -46,10 +58,11 @@ const AddPostPage = () => {
               id="textPost"
               type="text"
               placeholder="Текст поста"
+              value={text}
               onChange={(e) => setText(e.target.value)}
             />
             <button onClick={submitHandler}>Добавить</button>
-            <button>Отменить</button>
+            <button onClick={clearFormHandler}>Отменить</button>
             <img
               src={line}
               alt=""
