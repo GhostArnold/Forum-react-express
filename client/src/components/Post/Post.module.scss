@@ -1,0 +1,62 @@
+.post {
+  margin: 10px 0;
+  padding: 0 10px;
+  display: flex;
+  flex-direction: column;
+  max-width: 470px;
+  // border: 3px solid black;
+  background-color: #fff;
+  border-radius: 15px;
+  .user {
+    display: flex;
+    align-items: center;
+    margin: 0 4px;
+    .aboutUser {
+      width: 60%;
+      display: flex;
+      gap: 25px;
+      align-items: center;
+
+      img {
+        width: 25px;
+        height: 27px;
+      }
+    }
+    .views {
+      width: 40%;
+      display: flex;
+      justify-content: right;
+    }
+  }
+
+  .imgPost img {
+    width: 100%;
+  }
+
+  .aboutPost {
+    display: flex;
+    align-items: center;
+    margin: 0 4px;
+
+    .score {
+      width: 60%;
+      display: flex;
+      gap: 25px;
+      align-items: center;
+
+      .like {
+        font-size: 22px;
+        cursor: pointer;
+      }
+      .comment {
+        font-size: 20px;
+        cursor: pointer;
+      }
+    }
+    .createDate {
+      width: 40%;
+      display: flex;
+      justify-content: right;
+    }
+  }
+}

@@ -4,7 +4,7 @@
   background-size: cover;
   background-repeat: no-repeat;
 
-  .main {
+  .mainHeader {
     padding-top: 50px;
     padding-left: 45px;
     color: #f1f1e4;
@@ -28,6 +28,63 @@
         display: inline-block;
         margin-bottom: 3px;
         background-color: rgb(156, 156, 14);
+      }
+    }
+  }
+}
+
+.main {
+  background-color: #f2eded;
+  .posts {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    .allPosts {
+      width: 65%;
+      min-height: 300px;
+
+      .wallpaper {
+        margin: 30px 0;
+        padding: 10px 0;
+        margin-left: 75px;
+        // background-color: #e7f0a2;
+        // background-color: #f2eded;
+        background-color: #fff;
+        border-radius: 10px;
+        width: 72%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+    }
+    .popularPosts {
+      width: 35%;
+      display: flex;
+      justify-content: left;
+      margin: 30px 0;
+      .popular {
+        background-color: #fff;
+        min-width: 250px;
+        height: 250px;
+        border-radius: 10px;
+        position: sticky; // Добавляем sticky-позиционирование
+        top: 20px; // Отступ сверху при залипании
+        margin-right: 20px; // Отступ от правого края
+        .kubok {
+          display: flex;
+          justify-content: center;
+          img {
+            width: 100px;
+            margin: 0 auto;
+          }
+        }
+        .topList ol {
+          width: 200px;
+          li {
+            margin-bottom: 6px;
+          }
+        }
       }
     }
   }
