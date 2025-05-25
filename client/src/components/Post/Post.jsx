@@ -4,13 +4,13 @@ import { format } from 'date-fns';
 import profile from '../../assets/img/profile.png';
 import img from '../../assets/img/baobab.jpg';
 import styles from './Post.module.scss';
+import { Link } from 'react-router-dom';
 
 const Post = ({ post }) => {
   if (!post) {
-    return <div>Постов не существует</div>;
+    return <div>Пост не существует</div>;
   }
 
-  // Исправленная функция форматирования даты
   const formatDate = (dateString) => {
     try {
       const date = new Date(dateString);
@@ -21,11 +21,11 @@ const Post = ({ post }) => {
   };
 
   return (
-    <div>
-      <article className={styles.post}>
+    <article className={styles.post}>
+      <Link to={`/posts/${post._id}`} className={styles.postLink}>
         <div className={styles.user}>
           <div className={styles.aboutUser}>
-            <img src={profile} alt="" />
+            <img src={profile} alt="Аватар" />
             <p>{post.username || 'Неизвестный пользователь'}</p>
           </div>
           <div className={styles.views}>
@@ -34,29 +34,29 @@ const Post = ({ post }) => {
         </div>
         <div className={styles.imgPost}>
           {post.imgUrl ? (
-            <img src={`http://localhost:3002/${post.imgUrl}`} alt="" />
+            <img src={`http://localhost:3002/${post.imgUrl}`} alt="Пост" />
           ) : (
-            'Картинка отсуствует'
+            <img src={img} alt="Заглушка" />
           )}
         </div>
         <div className={styles.content}>
           <p>{post.text || 'Текст поста отсутствует'}</p>
         </div>
-        <div className={styles.aboutPost}>
-          <div className={styles.score}>
-            <div className={styles.like}>
-              <FcLikePlaceholder />
-            </div>
-            <div className={styles.comment}>
-              <FaRegComment />
-            </div>
+      </Link>
+      <div className={styles.aboutPost}>
+        <div className={styles.score}>
+          <div className={styles.like}>
+            <FcLikePlaceholder />
           </div>
-          <div className={styles.createDate}>
-            <p>{formatDate(post.createAt || new Date())}</p>
+          <div className={styles.comment}>
+            <FaRegComment />
           </div>
         </div>
-      </article>
-    </div>
+        <div className={styles.createDate}>
+          <p>{formatDate(post.createdAt)}</p>
+        </div>
+      </div>
+    </article>
   );
 };
 

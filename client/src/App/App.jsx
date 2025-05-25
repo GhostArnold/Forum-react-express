@@ -3,7 +3,7 @@ import AddPostPage from '../pages/AddPostPage/AddPostPage';
 import EditPostPage from '../pages/EditPostPage';
 import LoginPage from '../pages/LoginPage/LoginPage';
 import MainPage from '../pages/MainPage/MainPage';
-import PostPage from '../pages/PostPage';
+import PostPage from '../pages/PostPage/PostPage';
 import PostsPage from '../pages/PostsPage';
 import RegisterPage from '../pages/RegisterPage/RegisterPage';
 // Для меню
@@ -42,7 +42,7 @@ function App() {
           <Route path="register" element={<RegisterPage />} />
           <Route path="add-post" element={<AddPostPage />} />
           <Route path="my-posts" element={<PostsPage />} />
-          <Route path=":id" element={<PostPage />} />
+          <Route path="posts/:id" element={<PostPage />} />
           <Route path=":id/edit" element={<EditPostPage />} />
 
           <Route />

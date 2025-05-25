@@ -72,3 +72,25 @@ export const getAll = async (req, res) => {
     });
   }
 };
+
+export const getById = async (req, res) => {
+  try {
+    const post = await Post.findByIdAndUpdate(
+      req.params.id,
+      { $inc: { views: 1 } },
+      { new: true } // Возвращает обновленный документ
+    );
+
+    if (!post) {
+      return res.status(404).json({ message: 'Пост не найден' });
+    }
+
+    res.json(post);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: 'Ошибка при получении поста',
+      error: error.message,
+    });
+  }
+};
