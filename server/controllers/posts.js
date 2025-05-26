@@ -94,3 +94,43 @@ export const getById = async (req, res) => {
     });
   }
 };
+
+export const getMyPosts = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).populate('posts'); // Используем populate
+
+    if (!user) {
+      return res.status(404).json({ message: 'Пользователь не найден' });
+    }
+
+    res.json(user.posts); // Возвращаем уже заполненные посты
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: 'Ошибка при получении постов',
+      error: error.message,
+    });
+  }
+};
+
+// Удаление
+export const removePost = async (req, res) => {
+  try {
+    const post = await Post.findByIdAndDelete(req.params.id);
+    if (!post) {
+      return res.json({ message: 'Такого поста не существует' });
+    }
+
+    await User.findByIdAndUpdate(req.userId, {
+      $pull: { posts: req.params.id },
+    });
+
+    res.json({ message: 'Пост был удалён' }); // Возвращаем уже заполненные посты
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: 'Ошибка при получении постов',
+      error: error.message,
+    });
+  }
+};

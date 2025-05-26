@@ -1,9 +1,15 @@
 import { FcLikePlaceholder } from 'react-icons/fc';
 import { FaRegComment } from 'react-icons/fa';
 import { IoMdArrowBack } from 'react-icons/io';
+import { MdDelete } from 'react-icons/md';
+import { FaEdit } from 'react-icons/fa';
 import { format } from 'date-fns';
 import { Link, useParams } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { removePost } from '../../redux/features/post/postSlice.js';
+import { toast } from 'react-toastify';
 import profile from '../../assets/img/profile.png';
 import img from '../../assets/img/baobab.jpg';
 import axios from '../../utils/axios.js';
@@ -11,7 +17,21 @@ import styles from './PostPage.module.scss';
 
 const PostPage = () => {
   const [post, setPost] = useState(null);
+
+  const { user } = useSelector((state) => state.auth);
   const params = useParams();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const removePostHadler = () => {
+    try {
+      dispatch(removePost(params.id));
+      navigate('/');
+      toast('Пост был удалён');
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const fetchPost = useCallback(async () => {
     const { data } = await axios.get(`/posts/${params.id}`);
@@ -35,14 +55,26 @@ const PostPage = () => {
     <div>
       <main className={styles.main}>
         <article className={styles.post}>
-          <div className={styles.btnBack}>
-            <Link to="/">
-              <button>
-                <IoMdArrowBack />
-                Назад
-              </button>
-            </Link>
+          <div className={styles.functions}>
+            <div className={styles.btnBack}>
+              <Link to="/">
+                <button>
+                  <IoMdArrowBack />
+                  Назад
+                </button>
+              </Link>
+            </div>
+            {user?._id === post?.author && (
+              <div className={styles.edit}>
+                <MdDelete
+                  className={styles.deleteBtn}
+                  onClick={removePostHadler}
+                />
+                <FaEdit className={styles.editBtn} />
+              </div>
+            )}
           </div>
+
           <div className={styles.user}>
             <div className={styles.aboutUser}>
               <img src={profile} alt="" />
@@ -83,6 +115,13 @@ const PostPage = () => {
               <p>{formatDate(post?.createdAt)}</p>
             </div>
           </div>
+
+          {/* {user?._id === post?.author && (
+            <div className={styles.edit}>
+              <MdDelete />
+              <FaEdit />
+            </div>
+          )} */}
         </article>
       </main>
     </div>

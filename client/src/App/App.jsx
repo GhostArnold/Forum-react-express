@@ -4,7 +4,7 @@ import EditPostPage from '../pages/EditPostPage';
 import LoginPage from '../pages/LoginPage/LoginPage';
 import MainPage from '../pages/MainPage/MainPage';
 import PostPage from '../pages/PostPage/PostPage';
-import PostsPage from '../pages/PostsPage';
+import PostsPage from '../pages/PostsPage/PostsPage';
 import RegisterPage from '../pages/RegisterPage/RegisterPage';
 // Для меню
 import MainLayout from '../components/Layout/MainLayout';

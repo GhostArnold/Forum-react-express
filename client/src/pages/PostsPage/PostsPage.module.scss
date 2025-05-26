@@ -1,0 +1,9 @@
+.main {
+  background-color: #f2eded;
+  .list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+}
