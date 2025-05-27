@@ -134,3 +134,37 @@ export const removePost = async (req, res) => {
     });
   }
 };
+
+// Update post
+export const updatePost = async (req, res) => {
+  try {
+    const { title, text, id } = req.body;
+
+    const post = await Post.findById(id);
+    if (!post) {
+      return res.status(404).json({ message: 'Пост не найден' });
+    }
+
+    if (req.files?.image) {
+      const fileName = Date.now().toString() + req.files.image.name;
+      const __dirname = dirname(fileURLToPath(import.meta.url));
+      await req.files.image.mv(path.join(__dirname, '..', 'uploads', fileName));
+      post.imgUrl = fileName || '';
+    }
+
+    post.title = title || post.title;
+    post.text = text || post.text;
+
+    await post.save();
+
+    res.json({
+      post,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: 'Ошибка при обновлении поста',
+      error: error.message,
+    });
+  }
+};

@@ -70,7 +70,9 @@ const PostPage = () => {
                   className={styles.deleteBtn}
                   onClick={removePostHadler}
                 />
-                <FaEdit className={styles.editBtn} />
+                <Link to={`/${params.id}/edit`}>
+                  <FaEdit className={styles.editBtn} />
+                </Link>
               </div>
             )}
           </div>

@@ -42,6 +42,19 @@ export const removePost = createAsyncThunk(
   }
 );
 
+export const updatePost = createAsyncThunk(
+  'post/updatePost',
+  async (updatedPost) => {
+    // Добавлен rejectWithValue
+    try {
+      const { data } = await axios.put(`/posts/${updatedPost.id}`, updatedPost);
+      return data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+);
+
 export const postSlice = createSlice({
   name: 'post',
   initialState,
@@ -85,6 +98,21 @@ export const postSlice = createSlice({
         );
       })
       .addCase(removePost.rejected, (state) => {
+        state.loading = false;
+      })
+
+      // Редактирование поста
+      .addCase(updatePost.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updatePost.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.posts.findIndex(
+          (post) => post._id === action.payload._id
+        );
+        state.posts[index] = action.payload;
+      })
+      .addCase(updatePost.rejected, (state) => {
         state.loading = false;
       });
   },
