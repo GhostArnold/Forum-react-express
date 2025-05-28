@@ -10,6 +10,7 @@ import cors from 'cors';
 import fileUpload from 'express-fileupload';
 import authRoute from './routes/auth.js';
 import postRoute from './routes/posts.js';
+import commentRoute from './routes/comments.js';
 // Создаём приложение
 const app = express();
 // Подключаем dotenv
@@ -31,6 +32,7 @@ app.use(express.static('./uploads/'));
 // Router
 app.use('/api/auth', authRoute);
 app.use('/api/posts', postRoute);
+app.use('/api/comments', commentRoute);
 
 try {
   await mongoose.connect('mongodb://localhost:27017/Forum_Diplom');

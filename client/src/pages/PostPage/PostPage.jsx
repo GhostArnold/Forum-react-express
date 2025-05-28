@@ -10,13 +10,16 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { removePost } from '../../redux/features/post/postSlice.js';
 import { toast } from 'react-toastify';
+import { BiSolidSend } from 'react-icons/bi';
 import profile from '../../assets/img/profile.png';
 import img from '../../assets/img/baobab.jpg';
 import axios from '../../utils/axios.js';
 import styles from './PostPage.module.scss';
+import { createComment } from '../../redux/features/comment/commentSlice.js';
 
 const PostPage = () => {
-  const [post, setPost] = useState(null);
+  const [post, setPost] = useState('');
+  const [comment, setComment] = useState('');
 
   const { user } = useSelector((state) => state.auth);
   const params = useParams();
@@ -28,6 +31,16 @@ const PostPage = () => {
       dispatch(removePost(params.id));
       navigate('/');
       toast('Пост был удалён');
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSubmit = () => {
+    try {
+      const postId = params.id;
+      dispatch(createComment({ postId, comment }));
+      setComment('');
     } catch (error) {
       console.error(error);
     }
@@ -124,6 +137,22 @@ const PostPage = () => {
               <FaEdit />
             </div>
           )} */}
+          <div className={styles.comments}>
+            <h2>Комментарии: </h2>
+            <form action="" onSubmit={(e) => e.preventDefault()}>
+              <input
+                type="text"
+                placeholder="Напишите комментарий..."
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+              />
+              <BiSolidSend
+                type="submit"
+                onClick={handleSubmit}
+                className={styles.sendComment}
+              />
+            </form>
+          </div>
         </article>
       </main>
     </div>
