@@ -1,5 +1,6 @@
 import Post from '../models/Post.js';
 import User from '../models/User.js';
+import Comment from '../models/Comment.js';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -166,5 +167,18 @@ export const updatePost = async (req, res) => {
       message: 'Ошибка при обновлении поста',
       error: error.message,
     });
+  }
+};
+
+// Получение всех статей
+export const getPostComments = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    const list = await Promise.all((comment) => {
+      return Comment.findById(comment);
+    });
+    res.json(list);
+  } catch (error) {
+    console.error(error);
   }
 };

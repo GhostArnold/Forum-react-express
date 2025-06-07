@@ -7,9 +7,21 @@ const initialState = {
   loading: false,
 };
 
+export const getPostComments = createAsyncThunk(
+  'comment/getPostComments',
+  async (postId, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get(`/comments/comments/${postId}`);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 export const createComment = createAsyncThunk(
   'comment/createComment',
-  async ({ postId, comment }) => {
+  async ({ postId, comment }, { rejectWithValue }) => {
     try {
       const { data } = await axios.post(`/comments/${postId}`, {
         postId,
@@ -17,7 +29,7 @@ export const createComment = createAsyncThunk(
       });
       return data;
     } catch (error) {
-      console.error(error);
+      return rejectWithValue(error.response.data);
     }
   }
 );
@@ -37,6 +49,18 @@ export const commentSlice = createSlice({
         state.comments.push(action.payload);
       })
       .addCase(createComment.rejected, (state) => {
+        state.loading = false;
+      })
+
+      // Получение постов
+      .addCase(getPostComments.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getPostComments.fulfilled, (state, action) => {
+        state.loading = false;
+        state.comments = action.payload;
+      })
+      .addCase(getPostComments.rejected, (state) => {
         state.loading = false;
       });
   },

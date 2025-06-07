@@ -14,14 +14,19 @@ import { BiSolidSend } from 'react-icons/bi';
 import profile from '../../assets/img/profile.png';
 import img from '../../assets/img/baobab.jpg';
 import axios from '../../utils/axios.js';
+import CommentItem from '../../components/CommentItem/CommentItem.jsx';
 import styles from './PostPage.module.scss';
-import { createComment } from '../../redux/features/comment/commentSlice.js';
+import {
+  createComment,
+  getPostComments,
+} from '../../redux/features/comment/commentSlice.js';
 
 const PostPage = () => {
-  const [post, setPost] = useState('');
+  const [post, setPost] = useState(null);
   const [comment, setComment] = useState('');
 
   const { user } = useSelector((state) => state.auth);
+  const { comments, loading } = useSelector((state) => state.comment);
   const params = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -38,31 +43,57 @@ const PostPage = () => {
 
   const handleSubmit = () => {
     try {
+      if (!comment.trim()) return;
+
       const postId = params.id;
-      dispatch(createComment({ postId, comment }));
-      setComment('');
+      dispatch(createComment({ postId, comment })).then(() => {
+        setComment('');
+        // Обновляем комментарии после успешного добавления
+        dispatch(getPostComments(postId));
+      });
     } catch (error) {
       console.error(error);
     }
   };
 
+  const fetchComments = useCallback(async () => {
+    try {
+      await dispatch(getPostComments(params.id));
+    } catch (error) {
+      console.error(error);
+    }
+  }, [params.id, dispatch]);
+
   const fetchPost = useCallback(async () => {
-    const { data } = await axios.get(`/posts/${params.id}`);
-    setPost(data);
-  }, [params.id]);
+    try {
+      const { data } = await axios.get(`/posts/${params.id}`);
+      setPost(data);
+    } catch (error) {
+      console.error(error);
+      navigate('/not-found');
+    }
+  }, [params.id, navigate]);
 
   useEffect(() => {
     fetchPost();
   }, [fetchPost]);
 
+  useEffect(() => {
+    fetchComments();
+  }, [fetchComments]);
+
   const formatDate = (dateString) => {
     try {
       const date = new Date(dateString || new Date());
-      return format(date, 'yyyy-MM-dd');
+      return format(date, 'yyyy-MM-dd HH:mm');
     } catch {
       return 'Дата неизвестна';
     }
   };
+
+  if (!post) {
+    return <div className={styles.loading}>Загрузка...</div>;
+  }
 
   return (
     <div>
@@ -92,38 +123,42 @@ const PostPage = () => {
 
           <div className={styles.user}>
             <div className={styles.aboutUser}>
-              <img src={profile} alt="" />
+              <img src={profile} alt="Аватар" />
               <p>{post?.username || 'Неизвестный пользователь'}</p>
             </div>
             <div className={styles.views}>
-              <p>{post?.views || 0}</p>
+              <p>Просмотры: {post?.views || 0}</p>
             </div>
           </div>
+
           <div className={styles.imgPost}>
             {post?.imgUrl ? (
-              <img src={`http://localhost:3002/${post.imgUrl}`} alt="" />
+              <img
+                src={`http://localhost:3002/${post.imgUrl}`}
+                alt="Изображение поста"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = img;
+                }}
+              />
             ) : (
-              <img src={img} alt="" />
+              <img src={img} alt="Изображение поста" />
             )}
           </div>
+
           <div className={styles.content}>
-            {post?.text || (
-              <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid
-                eius, quaerat placeat repudiandae veniam dolorem ex aspernatur
-                sed explicabo neque corrupti voluptate quos deserunt sequi
-                voluptates dolores repellat nisi delectus consequuntur tempore
-                ab ullam illum.
-              </p>
-            )}
+            <p>{post?.text}</p>
           </div>
+
           <div className={styles.aboutPost}>
             <div className={styles.score}>
               <div className={styles.like}>
                 <FcLikePlaceholder />
+                <span>{post?.likes?.length || 0}</span>
               </div>
               <div className={styles.comment}>
                 <FaRegComment />
+                <span>{comments?.length || 0}</span>
               </div>
             </div>
             <div className={styles.createDate}>
@@ -131,27 +166,46 @@ const PostPage = () => {
             </div>
           </div>
 
-          {/* {user?._id === post?.author && (
-            <div className={styles.edit}>
-              <MdDelete />
-              <FaEdit />
-            </div>
-          )} */}
           <div className={styles.comments}>
-            <h2>Комментарии: </h2>
-            <form action="" onSubmit={(e) => e.preventDefault()}>
-              <input
-                type="text"
-                placeholder="Напишите комментарий..."
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-              />
-              <BiSolidSend
-                type="submit"
-                onClick={handleSubmit}
-                className={styles.sendComment}
-              />
-            </form>
+            <h2>Комментарии ({comments?.length || 0}):</h2>
+
+            {user && (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSubmit();
+                }}
+              >
+                <input
+                  type="text"
+                  placeholder="Напишите комментарий..."
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  disabled={loading}
+                />
+                <BiSolidSend
+                  type="submit"
+                  onClick={handleSubmit}
+                  className={styles.sendComment}
+                  disabled={loading || !comment.trim()}
+                />
+              </form>
+            )}
+
+            {loading ? (
+              <div className={styles.loading}>Загрузка комментариев...</div>
+            ) : comments?.length > 0 ? (
+              comments.map((cmt) => (
+                <CommentItem
+                  key={cmt._id}
+                  cmt={cmt}
+                  currentUserId={user?._id}
+                  postAuthorId={post?.author}
+                />
+              ))
+            ) : (
+              <p className={styles.noComments}>Пока нет комментариев</p>
+            )}
           </div>
         </article>
       </main>

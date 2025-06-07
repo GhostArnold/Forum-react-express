@@ -32,6 +32,9 @@ const Post = ({ post }) => {
             <p>{post.views || 0}</p>
           </div>
         </div>
+        <div className={styles.title}>
+          <h2>{post.title}</h2>
+        </div>
         <div className={styles.imgPost}>
           {post.imgUrl ? (
             <img src={`http://localhost:3002/${post.imgUrl}`} alt="Пост" />

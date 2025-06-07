@@ -7,7 +7,11 @@ export const createComment = async (req, res) => {
     if (!comment) {
       return res.json({ message: 'Комментарий не может быть пустым' });
     }
-    const newComment = new Comment({ comment });
+    const newComment = new Comment({
+      comment,
+      author: req.userId, // ID пользователя из checkAuth
+      postId, // ID поста
+    });
     await newComment.save();
 
     try {
@@ -18,6 +22,19 @@ export const createComment = async (req, res) => {
       console.error(error);
     }
     res.json(newComment);
+  } catch (error) {
+    res.json({ message: 'Что-то пошло не так' });
+    console.error(error);
+  }
+};
+
+export const getPostComments = async (req, res) => {
+  try {
+    // Ищем комментарии, где postId = ID поста из запроса
+    const comments = await Comment.find({ postId: req.params.id }).populate(
+      'author'
+    ); // Дополнительно подгружаем данные автора
+    res.json(comments);
   } catch (error) {
     res.json({ message: 'Что-то пошло не так' });
     console.error(error);
