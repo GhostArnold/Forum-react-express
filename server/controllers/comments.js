@@ -28,15 +28,14 @@ export const createComment = async (req, res) => {
   }
 };
 
+// В controllers/comments.js
 export const getPostComments = async (req, res) => {
   try {
-    // Ищем комментарии, где postId = ID поста из запроса
-    const comments = await Comment.find({ postId: req.params.id }).populate(
-      'author'
-    ); // Дополнительно подгружаем данные автора
+    const comments = await Comment.find({ postId: req.params.id })
+      .populate('author', 'username') // Добавьте это - подгружаем только имя пользователя
+      .exec();
     res.json(comments);
   } catch (error) {
-    res.json({ message: 'Что-то пошло не так' });
-    console.error(error);
+    res.status(500).json({ message: 'Ошибка при получении комментариев' });
   }
 };

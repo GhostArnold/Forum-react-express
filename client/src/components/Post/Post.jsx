@@ -13,8 +13,8 @@ const Post = ({ post }) => {
 
   const formatDate = (dateString) => {
     try {
-      const date = new Date(dateString);
-      return format(date, 'yyyy-MM-dd');
+      const date = new Date(dateString || new Date());
+      return format(date, 'yyyy-MM-dd HH:mm');
     } catch {
       return 'Дата неизвестна';
     }
