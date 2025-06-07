@@ -1,4 +1,4 @@
-import { FcLikePlaceholder } from 'react-icons/fc';
+import { FcLike, FcLikePlaceholder } from 'react-icons/fc';
 import { FaRegComment } from 'react-icons/fa';
 import { IoMdArrowBack } from 'react-icons/io';
 import { MdDelete } from 'react-icons/md';
@@ -8,7 +8,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { removePost } from '../../redux/features/post/postSlice.js';
+import { removePost, likePost } from '../../redux/features/post/postSlice.js';
 import { toast } from 'react-toastify';
 import { BiSolidSend } from 'react-icons/bi';
 import profile from '../../assets/img/profile.png';
@@ -41,6 +41,20 @@ const PostPage = () => {
     }
   };
 
+  const handleLike = async () => {
+    try {
+      if (!user) {
+        toast('Для оценки поста необходимо авторизоваться');
+        return;
+      }
+      await dispatch(likePost(params.id));
+      const { data } = await axios.get(`/posts/${params.id}`);
+      setPost(data);
+    } catch (error) {
+      console.error('Ошибка при лайке:', error);
+    }
+  };
+
   const handleSubmit = () => {
     try {
       if (!comment.trim()) return;
@@ -48,7 +62,6 @@ const PostPage = () => {
       const postId = params.id;
       dispatch(createComment({ postId, comment })).then(() => {
         setComment('');
-        // Обновляем комментарии после успешного добавления
         dispatch(getPostComments(postId));
       });
     } catch (error) {
@@ -152,8 +165,16 @@ const PostPage = () => {
 
           <div className={styles.aboutPost}>
             <div className={styles.score}>
-              <div className={styles.like}>
-                <FcLikePlaceholder />
+              <div
+                className={styles.like}
+                onClick={handleLike}
+                style={{ cursor: 'pointer' }}
+              >
+                {post?.likes?.includes(user?._id) ? (
+                  <FcLike size={20} />
+                ) : (
+                  <FcLikePlaceholder size={20} />
+                )}
                 <span>{post?.likes?.length || 0}</span>
               </div>
               <div className={styles.comment}>

@@ -7,6 +7,8 @@ import { getMyPosts } from '../controllers/posts.js';
 import { removePost } from '../controllers/posts.js';
 import { updatePost } from '../controllers/posts.js';
 import { getPostComments } from '../controllers/posts.js';
+import { getPost } from '../controllers/posts.js';
+import { likePost } from '../controllers/posts.js';
 
 const router = new Router();
 
@@ -29,5 +31,9 @@ router.put('/:id', checkAuth, updatePost);
 
 // Получение списка статей
 router.get('/comments/:id', getPostComments);
+
+// Добавляем к существующим роутам
+router.get('/:id', getPost);
+router.patch('/:id/like', checkAuth, likePost);
 
 export default router;

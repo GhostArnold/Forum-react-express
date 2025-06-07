@@ -182,3 +182,63 @@ export const getPostComments = async (req, res) => {
     console.error(error);
   }
 };
+
+// Лайк поста
+export const likePost = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+      return res.status(404).json({ message: 'Пост не найден' });
+    }
+
+    const userId = req.userId;
+    const likeIndex = post.likes.indexOf(userId);
+
+    if (likeIndex === -1) {
+      // Добавляем лайк
+      post.likes.push(userId);
+      post.likesCount += 1;
+    } else {
+      // Удаляем лайк
+      post.likes.splice(likeIndex, 1);
+      post.likesCount -= 1;
+    }
+
+    await post.save();
+
+    // Добавляем флаг isLiked для текущего пользователя
+    const result = post.toObject();
+    result.isLiked = post.likes.includes(userId);
+
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ message: 'Ошибка при обработке лайка' });
+    console.error(error);
+  }
+};
+
+// Получение поста с информацией о лайке
+export const getPost = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id)
+      .populate('author', 'username avatarUrl')
+      .populate('comments')
+      .exec();
+
+    if (!post) {
+      return res.status(404).json({ message: 'Пост не найден' });
+    }
+
+    // Добавляем флаг isLiked если пользователь авторизован
+    const result = post.toObject();
+    if (req.userId) {
+      result.isLiked = post.likes.includes(req.userId);
+    }
+
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ message: 'Ошибка при получении поста' });
+    console.error(error);
+  }
+};
