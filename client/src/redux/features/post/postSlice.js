@@ -1,11 +1,13 @@
+// src/redux/features/post/postSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '../../../utils/axios.js';
 
 const initialState = {
   posts: [],
-  popularPosts: [], // Исправлено опечатку (было popularPost)
+  popularPosts: [],
   loading: false,
   badWordsError: null,
+  searchQuery: '', // Added searchQuery to initial state
 };
 
 export const createPost = createAsyncThunk(
@@ -27,15 +29,19 @@ export const createPost = createAsyncThunk(
   }
 );
 
-export const getAllPosts = createAsyncThunk('post/getAllPosts', async () => {
-  try {
-    const { data } = await axios.get('/posts'); // Добавлен слеш в начале
-    return data;
-  } catch (error) {
-    console.error(error);
-    throw error;
+export const getAllPosts = createAsyncThunk(
+  'post/getAllPosts',
+  async ({ query = '' } = {}, { rejectWithValue }) => {
+    try {
+      const url = query ? `/posts?query=${query}` : '/posts';
+      const { data } = await axios.get(url);
+      return data;
+    } catch (error) {
+      console.error(error);
+      return rejectWithValue(error.response.data);
+    }
   }
-});
+);
 
 export const removePost = createAsyncThunk(
   'post/removePost',
@@ -53,7 +59,6 @@ export const removePost = createAsyncThunk(
 export const updatePost = createAsyncThunk(
   'post/updatePost',
   async (updatedPost, { rejectWithValue }) => {
-    // Добавлен rejectWithValue
     try {
       const { data } = await axios.put(`/posts/${updatedPost.id}`, updatedPost);
       return data;
@@ -80,16 +85,20 @@ export const likePost = createAsyncThunk(
 export const postSlice = createSlice({
   name: 'post',
   initialState,
-  reducers: {},
+  reducers: {
+    setSearchQuery: (state, action) => {
+      state.searchQuery = action.payload; // Reducer to update search query
+    },
+  },
   extraReducers: (builder) => {
     builder
-      // Create Post
+      // ----------- CREATE POST -----------
       .addCase(createPost.pending, (state) => {
         state.loading = true;
       })
       .addCase(createPost.fulfilled, (state, action) => {
         state.loading = false;
-        state.posts.unshift(action.payload); // Добавляем в начало массива
+        state.posts.unshift(action.payload);
       })
       .addCase(createPost.rejected, (state, action) => {
         state.loading = false;
@@ -99,21 +108,24 @@ export const postSlice = createSlice({
           state.error = action.error.message;
         }
       })
-
-      // Get All Posts
+      // ----------- GET ALL POSTS -----------
       .addCase(getAllPosts.pending, (state) => {
         state.loading = true;
       })
       .addCase(getAllPosts.fulfilled, (state, action) => {
         state.loading = false;
-        state.posts = action.payload.posts;
-        state.popularPosts = action.payload.popularPosts || []; // Добавлен fallback
+        if (Array.isArray(action.payload)) {
+          state.posts = action.payload; // If backend returns just posts
+          state.popularPosts = []; // Clear popularPosts
+        } else {
+          state.posts = action.payload.posts;
+          state.popularPosts = action.payload.popularPosts || [];
+        }
       })
       .addCase(getAllPosts.rejected, (state) => {
         state.loading = false;
       })
-
-      // Remove Post
+      // ----------- REMOVE POST -----------
       .addCase(removePost.pending, (state) => {
         state.loading = true;
       })
@@ -129,8 +141,7 @@ export const postSlice = createSlice({
       .addCase(removePost.rejected, (state) => {
         state.loading = false;
       })
-
-      // Update Post
+      // ----------- UPDATE POST -----------
       .addCase(updatePost.pending, (state) => {
         state.loading = true;
       })
@@ -150,14 +161,12 @@ export const postSlice = createSlice({
       .addCase(updatePost.rejected, (state) => {
         state.loading = false;
       })
-
-      // Like Post
+      // ----------- LIKE POST -----------
       .addCase(likePost.pending, (state) => {
         state.loading = true;
       })
       .addCase(likePost.fulfilled, (state, action) => {
         state.loading = false;
-
         // Обновляем в основном списке
         const postIndex = state.posts.findIndex(
           (post) => post._id === action.payload._id
@@ -180,4 +189,5 @@ export const postSlice = createSlice({
   },
 });
 
+export const { setSearchQuery } = postSlice.actions; // Export setSearchQuery
 export default postSlice.reducer;

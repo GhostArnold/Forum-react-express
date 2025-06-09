@@ -67,19 +67,27 @@ export const createPost = async (req, res) => {
   }
 };
 
-// Get All Posts
 export const getAll = async (req, res) => {
   try {
-    const posts = await Post.find().sort('-createdAt');
-    const popularPosts = await Post.find().limit(5).sort('-views');
-    if (!posts) {
-      return res.json({ message: 'Постов нет' });
+    const { query } = req.query;
+    let filter = {};
+
+    if (query) {
+      filter = {
+        $or: [
+          { title: { $regex: query, $options: 'i' } },
+          { text: { $regex: query, $options: 'i' } },
+        ],
+      };
     }
-    res.json({ posts, popularPosts });
+
+    const posts = await Post.find(filter).sort('-createdAt');
+    const popularPosts = await Post.find(filter).limit(5).sort('-views');
+
+    res.json({ posts, popularPosts }); // Send both posts and popularPosts
   } catch (error) {
-    res.json({
-      message: 'Что-то пошло не так',
-    });
+    console.error(error);
+    res.status(500).json({ message: 'Что-то пошло не так' });
   }
 };
 

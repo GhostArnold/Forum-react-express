@@ -4,16 +4,29 @@ import kubok from '../../assets/img/kubok.png';
 import Post from '../../components/Post/Post';
 import PopularPost from '../../components/PopularPost/PopularPost';
 import styles from './MainPage.module.scss';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getAllPosts } from '../../redux/features/post/postSlice';
+import { setSearchQuery } from '../../redux/features/post/postSlice';
 
 const MainPage = () => {
   const dispatch = useDispatch();
-  const { posts, popularPosts } = useSelector((state) => state.post);
+  const { posts, popularPosts, loading, error, searchQuery } = useSelector(
+    (state) => state.post
+  );
+  const [localSearchQuery, setLocalSearchQuery] = useState('');
 
   useEffect(() => {
-    dispatch(getAllPosts());
-  }, [dispatch]);
+    dispatch(getAllPosts({ query: searchQuery }));
+  }, [dispatch, searchQuery]);
+
+  const handleSearchChange = (e) => {
+    setLocalSearchQuery(e.target.value);
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    dispatch(setSearchQuery(localSearchQuery));
+  };
 
   return (
     <div>
@@ -33,17 +46,34 @@ const MainPage = () => {
             <img src={stiker} alt="" width="340px" height="320px" />
           </div>
         </div>
+
+        {/* Форма поиска */}
+        <form className={styles.search} onSubmit={handleSearchSubmit}>
+          <input
+            type="text"
+            placeholder="Поиск по ключевым словам"
+            value={localSearchQuery}
+            onChange={handleSearchChange}
+          />
+          <button type="submit">Search</button>
+        </form>
       </header>
 
       <main className={styles.main}>
         <section className={styles.posts}>
           <div className={styles.allPosts}>
             <div className={styles.wallpaper}>
-              {posts?.map((post) => (
-                <Post key={post._id} post={post} />
-              ))}
+              {loading ? (
+                <div>Loading posts...</div>
+              ) : error ? (
+                <div>Error: {error}</div>
+              ) : (
+                posts?.map((post) => <Post key={post._id} post={post} />)
+              )}
             </div>
           </div>
+
+          {/* Блок популярных постов */}
           <div className={styles.popularPosts}>
             <aside className={styles.popular}>
               <div className={styles.kubok}>
