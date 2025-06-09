@@ -40,7 +40,7 @@
     justify-content: space-around;
     width: 100%;
     .allPosts {
-      width: 65%;
+      width: 60%;
       min-height: 300px;
 
       .wallpaper {
@@ -59,18 +59,19 @@
       }
     }
     .popularPosts {
-      width: 35%;
+      width: 40%;
       display: flex;
       justify-content: left;
+      flex-direction: column;
       margin: 30px 0;
       .popular {
         background-color: #fff;
-        min-width: 250px;
+        max-width: 335px;
         height: 250px;
         border-radius: 10px;
         position: sticky; // Добавляем sticky-позиционирование
         top: 20px; // Отступ сверху при залипании
-        margin-right: 20px; // Отступ от правого края
+        margin-right: 30px; // Отступ от правого края
         .kubok {
           display: flex;
           justify-content: center;
@@ -83,6 +84,54 @@
           width: 200px;
           li {
             margin-bottom: 6px;
+          }
+        }
+      }
+      .search {
+        background-color: #fff;
+        max-width: 335px;
+        height: 150px;
+        margin-top: 30px;
+        margin-right: 30px; // Отступ от правого края
+        border-radius: 10px;
+        position: sticky; // Добавляем sticky-позиционирование
+        top: 300px; // Отступ сверху при залипании
+
+        display: flex;
+        justify-content: center;
+
+        form {
+          margin-top: 35px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+
+          .filter {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            input {
+              width: 210px;
+              height: 20px;
+              padding: 2px 4px;
+            }
+            .btn {
+              padding: 3.5px 4px;
+              border-radius: 3px;
+              cursor: pointer;
+              background-color: #8de8f3;
+              border: 0;
+            }
+          }
+          .reset {
+            margin-top: 10px;
+            .btn {
+              padding: 3.5px 4px;
+              border-radius: 3px;
+              border: 0;
+              background-color: #ff586f;
+              cursor: pointer;
+            }
           }
         }
       }

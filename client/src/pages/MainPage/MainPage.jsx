@@ -46,17 +46,6 @@ const MainPage = () => {
             <img src={stiker} alt="" width="340px" height="320px" />
           </div>
         </div>
-
-        {/* Форма поиска */}
-        <form className={styles.search} onSubmit={handleSearchSubmit}>
-          <input
-            type="text"
-            placeholder="Поиск по ключевым словам"
-            value={localSearchQuery}
-            onChange={handleSearchChange}
-          />
-          <button type="submit">Search</button>
-        </form>
       </header>
 
       <main className={styles.main}>
@@ -73,9 +62,9 @@ const MainPage = () => {
             </div>
           </div>
 
-          {/* Блок популярных постов */}
-          <div className={styles.popularPosts}>
-            <aside className={styles.popular}>
+          <aside className={styles.popularPosts}>
+            {/* Блок популярных постов */}
+            <div className={styles.popular}>
               <div className={styles.kubok}>
                 <img src={kubok} alt="Топ посты" />
               </div>
@@ -88,8 +77,35 @@ const MainPage = () => {
                   ))}
                 </ol>
               </div>
-            </aside>
-          </div>
+            </div>
+            <div className={styles.search}>
+              <form onSubmit={handleSearchSubmit}>
+                <div className={styles.filter}>
+                  <input
+                    type="text"
+                    placeholder="Поиск по ключевым словам"
+                    value={localSearchQuery}
+                    onChange={handleSearchChange}
+                  />
+                  <button type="submit" className={styles.btn}>
+                    Найти
+                  </button>
+                </div>
+                <div className={styles.reset}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLocalSearchQuery('');
+                      dispatch(setSearchQuery(''));
+                    }}
+                    className={styles.btn}
+                  >
+                    Обнулить фильтры
+                  </button>
+                </div>
+              </form>
+            </div>
+          </aside>
         </section>
       </main>
     </div>
