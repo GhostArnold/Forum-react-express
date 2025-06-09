@@ -3,11 +3,20 @@ import User from '../models/User.js';
 import Comment from '../models/Comment.js';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
-
+import { containsBadWords } from '../utils/badWords.js';
 // Create Post
 export const createPost = async (req, res) => {
   try {
     const { title, text } = req.body;
+
+    // Проверка на нецензурную лексику
+    if (containsBadWords(title) || containsBadWords(text)) {
+      return res.status(400).json({
+        message: 'Пост содержит недопустимые слова',
+        errorType: 'BAD_WORDS',
+      });
+    }
+
     const user = await User.findById(req.userId);
 
     if (req.files?.image) {

@@ -18,6 +18,7 @@ dotenv.config();
 
 // env переменные
 const DB_PORT = process.env.DB_PORT || 3001;
+const BAD_WORDS = process.env.BAD_WORDS || ''; // Получаем список слов из env
 
 // middlewares
 
@@ -33,6 +34,12 @@ app.use(express.static('./uploads/'));
 app.use('/api/auth', authRoute);
 app.use('/api/posts', postRoute);
 app.use('/api/comments', commentRoute);
+
+// API-эндпоинт для списка матерных слов
+app.get('/api/badwords', (req, res) => {
+  const badWordsList = BAD_WORDS.split(' '); // Разделяем строку на массив
+  res.json({ badWords: badWordsList }); // Отправляем в формате JSON
+});
 
 try {
   await mongoose.connect('mongodb://localhost:27017/Forum_Diplom');

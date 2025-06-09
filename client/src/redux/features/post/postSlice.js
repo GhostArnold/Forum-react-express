@@ -5,17 +5,24 @@ const initialState = {
   posts: [],
   popularPosts: [], // Исправлено опечатку (было popularPost)
   loading: false,
+  badWordsError: null,
 };
 
 export const createPost = createAsyncThunk(
-  'posts/createPost',
-  async (params) => {
+  'post/createPost',
+  async (params, { rejectWithValue }) => {
     try {
       const { data } = await axios.post('/posts', params);
       return data;
     } catch (error) {
-      console.error(error);
-      throw error; // Добавлено для корректной обработки ошибок
+      if (error.response?.data?.errorType === 'BAD_WORDS') {
+        return rejectWithValue({
+          message:
+            'Пост содержит недопустимые слова. Измените текст и попробуйте снова.',
+          type: 'badWords',
+        });
+      }
+      return rejectWithValue(error.response.data);
     }
   }
 );
@@ -84,8 +91,13 @@ export const postSlice = createSlice({
         state.loading = false;
         state.posts.unshift(action.payload); // Добавляем в начало массива
       })
-      .addCase(createPost.rejected, (state) => {
+      .addCase(createPost.rejected, (state, action) => {
         state.loading = false;
+        if (action.payload?.type === 'badWords') {
+          state.badWordsError = action.payload.message;
+        } else {
+          state.error = action.error.message;
+        }
       })
 
       // Get All Posts
