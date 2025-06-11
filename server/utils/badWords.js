@@ -1,20 +1,4 @@
-export const badWordsList = [
-  'хуй',
-  'пизда',
-  'ебал',
-  'бля',
-  'блядь',
-  'ебан',
-  'сука',
-  'гондон',
-  'мудак',
-  'залупа',
-  'пидор',
-  'долбоеб',
-  'охереть',
-  'охуеть',
-  // Добавьте другие слова
-];
+export const badWordsList = ['плохо'];
 
 export const containsBadWords = (text) => {
   if (!text) return false;
