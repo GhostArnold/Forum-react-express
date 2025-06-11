@@ -32,16 +32,19 @@ const MainPage = () => {
     <div>
       <header className={styles.header}>
         <div className={styles.mainHeader}>
-          <div className={styles.main__title}>
-            <h1>Веб-форум</h1>
+          <div className={styles.text}>
+            <div className={styles.main__title}>
+              <h1>Веб-форум</h1>
+            </div>
+            <div className={styles.sub__title}>
+              <h2>
+                <span>Где рождаются идеи.</span> Общайтесь, творите и находите
+                единомышленников. Вместе мы создаем что-то большее, чем каждый
+                из нас по отдельности.
+              </h2>
+            </div>
           </div>
-          <div className={styles.sub__title}>
-            <h2>
-              <span>Где рождаются идеи.</span> Общайтесь, творите и находите
-              единомышленников. Вместе мы создаем что-то большее, чем каждый из
-              нас по отдельности.
-            </h2>
-          </div>
+
           <div className={styles.stiker}>
             <img src={stiker} alt="" width="340px" height="320px" />
           </div>

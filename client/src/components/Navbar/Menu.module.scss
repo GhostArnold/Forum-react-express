@@ -3,17 +3,19 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
+  position: relative; // Added for positioning the hamburger button
 
+  /* Styles for desktop version */
   .mainNav {
     display: flex;
     gap: 15px;
 
     a {
-      text-decoration: none; // Убираем подчёркивание
-      color: black; // Обычный цвет текста
+      text-decoration: none;
+      color: black;
 
       &.active {
-        color: rgb(0, 0, 0); // Синий цвет для активной ссылки
+        color: rgb(0, 0, 0);
         transform: scale(1.1);
         font-weight: bold;
       }
@@ -22,16 +24,67 @@
       }
     }
   }
+
   .btn {
     &:hover {
       transform: scale(1.15);
     }
-    Button {
+
+    button {
       border: 0;
       background-color: white;
       cursor: pointer;
-      :active {
-        font-weight: bold ;
+
+      &:active {
+        font-weight: bold;
+      }
+    }
+  }
+
+  /* Styles for hamburger button */
+  .hamburger {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: none; // Hide on larger screens
+  }
+
+  /* Media query for mobile devices */
+  @media (max-width: 768px) {
+    flex-direction: column; // Stack items vertically
+    align-items: flex-start; // Align items to the start
+    justify-content: center;
+    margin-left: 10px;
+    .hamburger {
+      display: block; // Show hamburger on mobile
+      margin-bottom: 20px;
+    }
+
+    /* Hide the main navigation and button by default */
+    .mainNav,
+    .btn {
+      display: none;
+    }
+
+    /* Show the navigation and button when the menu is open */
+    &.open {
+      .mainNav,
+      .btn {
+        display: flex; // Show the navigation and button
+        flex-direction: column; // Stack navigation items vertically
+        width: 100%; // Take full width
+        margin-top: 10px; // Add some space
+        margin-left: 20px;
+      }
+
+      .mainNav a {
+        padding: 10px 0; // Add padding to links for better touch
+        border-bottom: 1px solid #eee; // Add a border between links
+        margin-left: 35px;
       }
     }
   }

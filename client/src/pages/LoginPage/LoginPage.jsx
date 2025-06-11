@@ -62,9 +62,7 @@ const LoginPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <p>
-                <a href="/">Забыли пароль?</a>
-              </p>
+              <p></p>
               <button
                 type="submit"
                 className={styles.btn}

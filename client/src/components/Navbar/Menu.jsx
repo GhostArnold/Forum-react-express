@@ -4,29 +4,39 @@ import { toast } from 'react-toastify';
 import style from './Menu.module.scss';
 import profileImg from '../../assets/img/profile.png';
 import { checkIsAuth, logout } from '../../redux/features/auth/authSlice.js';
+import { useState } from 'react'; // Import useState
 
 const Menu = () => {
   const isAuth = useSelector(checkIsAuth);
   const dispatch = useDispatch();
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // State for menu open/close
 
   const logoutHandler = () => {
     dispatch(logout());
-    localStorage.removeItem('token'); // Измените window.localStorage на просто localStorage
+    localStorage.removeItem('token');
     toast('Вы вышли из системы');
+  };
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen); // Toggle menu state
   };
 
   return (
     <div>
-      {/* Делаем навбар */}
-      <nav className={style.navbar}>
-        <div>
+      <nav className={`${style.navbar} ${isMenuOpen ? style.open : ''}`}>
+        <div className={style.profile}>
           <img src={profileImg} alt="Мой профиль" width="25px" height="25px" />
         </div>
-        <div className={style.mainNav}>
+        {/* Hamburger button for mobile */}
+        <button className={style.hamburger} onClick={toggleMenu}>
+          ☰
+        </button>
+
+        <div className={`${style.mainNav} ${style.mobileNav}`}>
           <NavLink
             to="/"
-            // Если активно, то применяем стили из scss
             className={({ isActive }) => (isActive ? style.active : '')}
+            onClick={() => setIsMenuOpen(false)} // Close menu on click
           >
             Главная
           </NavLink>
@@ -35,19 +45,22 @@ const Menu = () => {
               <NavLink
                 to="/my-posts"
                 className={({ isActive }) => (isActive ? style.active : '')}
+                onClick={() => setIsMenuOpen(false)} // Close menu on click
               >
                 Мои посты
               </NavLink>
               <NavLink
                 to="/add-post"
                 className={({ isActive }) => (isActive ? style.active : '')}
+                onClick={() => setIsMenuOpen(false)} // Close menu on click
               >
                 Добавить пост
               </NavLink>
             </>
           )}
         </div>
-        <div className={style.btn}>
+
+        <div className={`${style.btn} ${style.mobileBtn}`}>
           {isAuth ? (
             <button onClick={logoutHandler}>Выйти</button>
           ) : (

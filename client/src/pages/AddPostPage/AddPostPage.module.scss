@@ -1,22 +1,27 @@
 .main {
   display: flex;
   justify-content: center;
-  height: 90.8vh;
+  min-height: 100vh;
+  height: auto;
   align-items: center;
   background-image: url(../../assets/img/nature-structure-wood-grain-ozfy.jpg);
   background-size: cover;
+  background-position: center;
   background-repeat: no-repeat;
-
   font-family: 'Bad Script', cursive;
   font-weight: 400;
   font-style: normal;
+  padding: 20px;
 
   .wallpaper {
     padding: 10px;
     background-image: url('../../assets/img/desk.png');
-    background-size: cover;
-    width: 655px;
-    height: 445px;
+    background-size: contain;
+    background-position: center;
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+    min-height: 500px;
     background-repeat: no-repeat;
     display: flex;
     justify-content: center;
@@ -24,18 +29,18 @@
 
     .form {
       display: flex;
-      width: 420px;
+      width: 100%;
+      max-width: 420px;
       flex-direction: column;
       gap: 15px;
       background-image: url('../../assets/img/paper1.jpg');
       background-size: cover;
       background-repeat: no-repeat;
-      padding: 36px 16px 28px 16px;
+      padding: 30px 15px;
       border-radius: 2px;
-      -webkit-box-shadow: 0px 1px 8px 13px rgba(34, 60, 80, 0.2);
-      -moz-box-shadow: 0px 1px 8px 13px rgba(34, 60, 80, 0.2);
       box-shadow: 0px 1px 8px 13px rgba(34, 60, 80, 0.2);
       position: relative;
+      margin: 0 20px;
 
       .line {
         position: absolute;
@@ -43,18 +48,19 @@
         height: 15px;
         &.first {
           bottom: 60px;
-          left: 197px;
+          left: 50%;
+          transform: translateX(-50%);
         }
         &.second {
           bottom: 17px;
-          left: 197px;
+          left: 50%;
+          transform: translateX(-50%);
         }
       }
+
       button {
         cursor: pointer;
-        // background-color: rgb(36, 227, 227);
-        padding: 5px 5px;
-        // border: 1px solid rgb(48, 197, 197);
+        padding: 8px;
         border-radius: 10px;
         border: none;
         background-color: transparent;
@@ -63,30 +69,89 @@
           transform: scale(1.1);
         }
       }
+
       textarea {
-        height: 80px;
+        height: 100px;
         resize: none;
-        padding: 6px;
+        padding: 8px;
+        font-size: 16px;
       }
+
       input {
-        height: 20px;
-        padding: 2px 4px;
+        height: 30px;
+        padding: 5px 8px;
+        font-size: 16px;
       }
-      // .postImg img {
-      //   width: 300px;
-      //   height: 300px;
-      // }
+
       .redPinning {
         position: absolute;
-        width: 42px;
-        height: 38px;
+        width: 30px;
+        height: 30px;
         &.first {
-          right: 12px;
+          right: 5px;
           top: -2px;
         }
         &.second {
-          left: -4px;
+          left: 5px;
           top: -2px;
+        }
+      }
+    }
+  }
+
+  /* Медиа-запросы для адаптации */
+  @media (max-width: 768px) {
+    height: auto;
+    padding: 20px 10px;
+    align-items: flex-start;
+
+    .wallpaper {
+      min-height: 500px;
+      width: 450px;
+      background-size: cover;
+
+      .form {
+        padding: 25px 10px;
+        margin: 0 10px;
+
+        .line {
+          width: 40px;
+          &.first {
+            bottom: 50px;
+          }
+          &.second {
+            bottom: 15px;
+          }
+        }
+
+        textarea {
+          height: 80px;
+        }
+
+        .redPinning {
+          width: 25px;
+          height: 25px;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .wallpaper {
+      min-height: 450px;
+
+      .form {
+        padding: 20px 8px;
+        gap: 10px;
+
+        input,
+        textarea {
+          font-size: 14px;
+        }
+
+        .redPinning {
+          width: 20px;
+          height: 20px;
         }
       }
     }

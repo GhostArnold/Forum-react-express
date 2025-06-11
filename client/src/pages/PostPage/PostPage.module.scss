@@ -2,6 +2,8 @@
   padding-top: 30px;
   padding-bottom: 30px;
   background-color: #f2eded;
+  padding: 20px;
+
   .post {
     margin: 0 auto;
     padding: 0 30px;
@@ -126,5 +128,13 @@
         }
       }
     }
+  }
+}
+@media (max-width: 360px) {
+  .main {
+    padding-top: 30px;
+    padding-bottom: 30px;
+    background-color: #f2eded;
+    padding-bottom: 100px;
   }
 }
