@@ -3,191 +3,188 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '../../../utils/axios.js';
 
 const initialState = {
-  posts: [],
-  popularPosts: [],
-  loading: false,
-  badWordsError: null,
-  searchQuery: '', // Added searchQuery to initial state
+  posts: [], // Начальное состояние для хранения постов
+  popularPosts: [], // Начальное состояние для хранения популярных постов
+  loading: false, // Начальное состояние для индикатора загрузки
+  badWordsError: null, // Начальное состояние для ошибки, связанной с нецензурными словами
+  searchQuery: '', // Начальное состояние для поискового запроса
 };
 
 export const createPost = createAsyncThunk(
-  'post/createPost',
+  // Асинхронный thunk для создания поста
+  'post/createPost', // Уникальный идентификатор thunk
   async (params, { rejectWithValue }) => {
+    // Функция, которая будет выполнена при вызове thunk
     try {
-      const { data } = await axios.post('/posts', params);
-      return data;
+      const { data } = await axios.post('/posts', params); // Отправляем POST-запрос
+      return data; // Возвращаем полученные данные
     } catch (error) {
+      // Обрабатываем ошибки
       if (error.response?.data?.errorType === 'BAD_WORDS') {
+        // Если ошибка связана с нецензурными словами
         return rejectWithValue({
+          // Возвращаем объект ошибки
           message:
             'Пост содержит недопустимые слова. Измените текст и попробуйте снова.',
           type: 'badWords',
         });
       }
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response.data); // Возвращаем общую ошибку
     }
   }
 );
 
 export const getAllPosts = createAsyncThunk(
-  'post/getAllPosts',
+  // Асинхронный thunk для получения всех постов
+  'post/getAllPosts', // Уникальный идентификатор thunk
   async ({ query = '' } = {}, { rejectWithValue }) => {
+    // Функция, которая будет выполнена при вызове thunk
     try {
-      const url = query ? `/posts?query=${query}` : '/posts';
-      const { data } = await axios.get(url);
-      return data;
+      const url = query ? `/posts?query=${query}` : '/posts'; // Формируем URL в зависимости от наличия запроса
+      const { data } = await axios.get(url); // Отправляем GET-запрос
+      return data; // Возвращаем полученные данные
     } catch (error) {
-      console.error(error);
-      return rejectWithValue(error.response.data);
+      console.error(error); // Выводим ошибку в консоль
+      return rejectWithValue(error.response.data); // Возвращаем ошибку
     }
   }
 );
 
 export const removePost = createAsyncThunk(
-  'post/removePost',
+  // Асинхронный thunk для удаления поста
+  'post/removePost', // Уникальный идентификатор thunk
   async (id, { rejectWithValue }) => {
+    // Функция, которая будет выполнена при вызове thunk
     try {
-      const { data } = await axios.delete(`/posts/${id}`);
-      return { id, ...data };
+      const { data } = await axios.delete(`/posts/${id}`); // Отправляем DELETE-запрос
+      return { id, ...data }; // Возвращаем ID удаленного поста
     } catch (error) {
-      console.error(error);
-      return rejectWithValue(error.response.data);
+      console.error(error); // Выводим ошибку в консоль
+      return rejectWithValue(error.response.data); // Возвращаем ошибку
     }
   }
 );
 
 export const updatePost = createAsyncThunk(
-  'post/updatePost',
+  // Асинхронный thunk для обновления поста
+  'post/updatePost', // Уникальный идентификатор thunk
   async (updatedPost, { rejectWithValue }) => {
+    // Функция, которая будет выполнена при вызове thunk
     try {
-      const { data } = await axios.put(`/posts/${updatedPost.id}`, updatedPost);
-      return data;
+      const { data } = await axios.put(`/posts/${updatedPost.id}`, updatedPost); // Отправляем PUT-запрос
+      return data; // Возвращаем обновленные данные
     } catch (error) {
-      console.error(error);
-      return rejectWithValue(error.response.data);
+      console.error(error); // Выводим ошибку в консоль
+      return rejectWithValue(error.response.data); // Возвращаем ошибку
     }
   }
 );
 
 export const likePost = createAsyncThunk(
-  'post/likePost',
+  // Асинхронный thunk для лайка поста
+  'post/likePost', // Уникальный идентификатор thunk
   async (postId, { rejectWithValue }) => {
+    // Функция, которая будет выполнена при вызове thunk
     try {
-      const { data } = await axios.patch(`/posts/${postId}/like`);
-      return data;
+      const { data } = await axios.patch(`/posts/${postId}/like`); // Отправляем PATCH-запрос
+      return data; // Возвращаем обновленные данные
     } catch (error) {
-      console.error(error);
-      return rejectWithValue(error.response.data);
+      console.error(error); // Выводим ошибку в консоль
+      return rejectWithValue(error.response.data); // Возвращаем ошибку
     }
   }
 );
 
 export const postSlice = createSlice({
-  name: 'post',
-  initialState,
+  name: 'post', // Имя слайса
+  initialState, // Начальное состояние
   reducers: {
+    // Редьюсеры (синхронные действия)
     setSearchQuery: (state, action) => {
-      state.searchQuery = action.payload; // Reducer to update search query
+      // Редьюсер для установки поискового запроса
+      state.searchQuery = action.payload; // Обновляем поисковый запрос
     },
   },
   extraReducers: (builder) => {
+    // Обработчики для асинхронных действий
     builder
-      // ----------- CREATE POST -----------
+      // Создание поста
       .addCase(createPost.pending, (state) => {
-        state.loading = true;
+        // Обработка состояния "pending" для createPost
+        state.loading = true; // Устанавливаем loading в true
       })
-      .addCase(createPost.fulfilled, (state, action) => {
-        state.loading = false;
-        state.posts.unshift(action.payload);
+      .addCase(createPost.fulfilled, (state) => {
+        // Обработка состояния "fulfilled" для createPost
+        state.loading = false; // Устанавливаем loading в false
       })
       .addCase(createPost.rejected, (state, action) => {
-        state.loading = false;
-        if (action.payload?.type === 'badWords') {
-          state.badWordsError = action.payload.message;
-        } else {
-          state.error = action.error.message;
-        }
+        // Обработка состояния "rejected" для createPost
+        state.loading = false; // Устанавливаем loading в false
+        state.badWordsError = action.payload; // Устанавливаем ошибку, связанную с нецензурными словами
       })
-      // ----------- GET ALL POSTS -----------
+
+      // Получение постов
       .addCase(getAllPosts.pending, (state) => {
-        state.loading = true;
+        // Обработка состояния "pending" для getAllPosts
+        state.loading = true; // Устанавливаем loading в true
       })
       .addCase(getAllPosts.fulfilled, (state, action) => {
-        state.loading = false;
-        if (Array.isArray(action.payload)) {
-          state.posts = action.payload; // If backend returns just posts
-          state.popularPosts = []; // Clear popularPosts
-        } else {
-          state.posts = action.payload.posts;
-          state.popularPosts = action.payload.popularPosts || [];
-        }
+        // Обработка состояния "fulfilled" для getAllPosts
+        state.loading = false; // Устанавливаем loading в false
+        state.posts = action.payload; // Устанавливаем полученные посты
       })
       .addCase(getAllPosts.rejected, (state) => {
-        state.loading = false;
+        // Обработка состояния "rejected" для getAllPosts
+        state.loading = false; // Устанавливаем loading в false
+        state.posts = []; // Очищаем список постов в случае ошибки
       })
-      // ----------- REMOVE POST -----------
+
+      // Удаление поста
       .addCase(removePost.pending, (state) => {
-        state.loading = true;
+        // Обработка состояния "pending" для removePost
+        state.loading = true; // Устанавливаем loading в true
       })
       .addCase(removePost.fulfilled, (state, action) => {
-        state.loading = false;
+        // Обработка состояния "fulfilled" для removePost
+        state.loading = false; // Устанавливаем loading в false
         state.posts = state.posts.filter(
-          (post) => post._id !== action.meta.arg
-        );
-        state.popularPosts = state.popularPosts.filter(
-          (post) => post._id !== action.meta.arg
-        );
+          (post) => post._id !== action.payload.id
+        ); // Удаляем пост из списка
       })
       .addCase(removePost.rejected, (state) => {
-        state.loading = false;
+        // Обработка состояния "rejected" для removePost
+        state.loading = false; // Устанавливаем loading в false
       })
-      // ----------- UPDATE POST -----------
-      .addCase(updatePost.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(updatePost.fulfilled, (state, action) => {
-        state.loading = false;
-        const index = state.posts.findIndex(
-          (post) => post._id === action.payload._id
-        );
-        if (index !== -1) state.posts[index] = action.payload;
 
-        const popularIndex = state.popularPosts.findIndex(
-          (post) => post._id === action.payload._id
-        );
-        if (popularIndex !== -1)
-          state.popularPosts[popularIndex] = action.payload;
+      // Обновление поста
+      .addCase(updatePost.pending, (state) => {
+        // Обработка состояния "pending" для updatePost
+        state.loading = true; // Устанавливаем loading в true
+      })
+      .addCase(updatePost.fulfilled, (state) => {
+        // Обработка состояния "fulfilled" для updatePost
+        state.loading = false; // Устанавливаем loading в false
       })
       .addCase(updatePost.rejected, (state) => {
-        state.loading = false;
+        // Обработка состояния "rejected" для updatePost
+        state.loading = false; // Устанавливаем loading в false
       })
-      // ----------- LIKE POST -----------
-      .addCase(likePost.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(likePost.fulfilled, (state, action) => {
-        state.loading = false;
-        // Обновляем в основном списке
-        const postIndex = state.posts.findIndex(
-          (post) => post._id === action.payload._id
-        );
-        if (postIndex !== -1) {
-          state.posts[postIndex] = action.payload;
-        }
 
-        // Обновляем в популярных
-        const popularIndex = state.popularPosts.findIndex(
-          (post) => post._id === action.payload._id
-        );
-        if (popularIndex !== -1) {
-          state.popularPosts[popularIndex] = action.payload;
-        }
+      // Лайк поста
+      .addCase(likePost.pending, (state) => {
+        // Обработка состояния "pending" для likePost
+        state.loading = true; // Устанавливаем loading в true
+      })
+      .addCase(likePost.fulfilled, (state) => {
+        // Обработка состояния "fulfilled" для likePost
+        state.loading = false; // Устанавливаем loading в false
       })
       .addCase(likePost.rejected, (state) => {
-        state.loading = false;
+        // Обработка состояния "rejected" для likePost
+        state.loading = false; // Устанавливаем loading в false
       });
   },
 });
 
-export const { setSearchQuery } = postSlice.actions; // Export setSearchQuery
-export default postSlice.reducer;
+export const { setSearchQuery } = postSlice.actions; // Экспортируем action creator
+export default postSlice.reducer; // Экспортируем редьюсер

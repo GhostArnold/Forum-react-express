@@ -133,20 +133,24 @@ export const getMyPosts = async (req, res) => {
 
 // Удаление
 export const removePost = async (req, res) => {
+  // Функция для удаления поста
   try {
-    const post = await Post.findByIdAndDelete(req.params.id);
+    const post = await Post.findByIdAndDelete(req.params.id); // Находим и удаляем пост по ID
     if (!post) {
-      return res.json({ message: 'Такого поста не существует' });
+      // Проверяем, что пост существует
+      return res.json({ message: 'Такого поста не существует' }); // Возвращаем ошибку, если пост не найден
     }
 
     await User.findByIdAndUpdate(req.userId, {
+      // Обновляем информацию о пользователе, удаляя ID поста из списка постов пользователя
       $pull: { posts: req.params.id },
     });
 
-    res.json({ message: 'Пост был удалён' }); // Возвращаем уже заполненные посты
+    res.json({ message: 'Пост был удалён' }); // Возвращаем сообщение об успешном удалении
   } catch (error) {
-    console.error(error);
+    console.error(error); // Выводим ошибку в консоль
     res.status(500).json({
+      // Возвращаем ошибку сервера
       message: 'Ошибка при получении постов',
       error: error.message,
     });
@@ -155,32 +159,37 @@ export const removePost = async (req, res) => {
 
 // Update post
 export const updatePost = async (req, res) => {
+  // Функция для обновления поста
   try {
-    const { title, text, id } = req.body;
+    const { title, text, id } = req.body; // Получаем заголовок, текст и ID поста из тела запроса
 
-    const post = await Post.findById(id);
+    const post = await Post.findById(id); // Находим пост по ID
     if (!post) {
-      return res.status(404).json({ message: 'Пост не найден' });
+      // Проверяем, что пост существует
+      return res.status(404).json({ message: 'Пост не найден' }); // Возвращаем ошибку, если пост не найден
     }
 
     if (req.files?.image) {
-      const fileName = Date.now().toString() + req.files.image.name;
-      const __dirname = dirname(fileURLToPath(import.meta.url));
-      await req.files.image.mv(path.join(__dirname, '..', 'uploads', fileName));
-      post.imgUrl = fileName || '';
+      // Если в запросе есть изображение
+      const fileName = Date.now().toString() + req.files.image.name; // Создаем уникальное имя файла
+      const __dirname = dirname(fileURLToPath(import.meta.url)); // Получаем текущую директорию
+      await req.files.image.mv(path.join(__dirname, '..', 'uploads', fileName)); // Перемещаем файл в папку uploads
+      post.imgUrl = fileName || ''; // Обновляем URL изображения
     }
 
-    post.title = title || post.title;
-    post.text = text || post.text;
+    post.title = title || post.title; // Обновляем заголовок, если он есть в запросе
+    post.text = text || post.text; // Обновляем текст, если он есть в запросе
 
-    await post.save();
+    await post.save(); // Сохраняем изменения
 
     res.json({
+      // Возвращаем обновленный пост
       post,
     });
   } catch (error) {
-    console.error(error);
+    console.error(error); // Выводим ошибку в консоль
     res.status(500).json({
+      // Возвращаем ошибку сервера
       message: 'Ошибка при обновлении поста',
       error: error.message,
     });
@@ -189,73 +198,80 @@ export const updatePost = async (req, res) => {
 
 // Получение всех статей
 export const getPostComments = async (req, res) => {
+  // Функция для получения комментариев поста
   try {
-    const post = await Post.findById(req.params.id);
+    const post = await Post.findById(req.params.id); // Находим пост по ID
     const list = await Promise.all((comment) => {
+      // Получаем все комментарии
       return Comment.findById(comment);
     });
-    res.json(list);
+    res.json(list); // Возвращаем список комментариев
   } catch (error) {
-    console.error(error);
+    console.error(error); // Выводим ошибку в консоль
   }
 };
 
 // Лайк поста
 export const likePost = async (req, res) => {
+  // Функция для лайка поста
   try {
-    const post = await Post.findById(req.params.id);
+    const post = await Post.findById(req.params.id); // Находим пост по ID
 
     if (!post) {
-      return res.status(404).json({ message: 'Пост не найден' });
+      // Проверяем, что пост существует
+      return res.status(404).json({ message: 'Пост не найден' }); // Возвращаем ошибку, если пост не найден
     }
 
-    const userId = req.userId;
-    const likeIndex = post.likes.indexOf(userId);
+    const userId = req.userId; // Получаем ID пользователя из запроса
+    const likeIndex = post.likes.indexOf(userId); // Проверяем, лайкнул ли пользователь пост
 
     if (likeIndex === -1) {
-      // Добавляем лайк
-      post.likes.push(userId);
-      post.likesCount += 1;
+      // Если пользователь не лайкнул пост
+      post.likes.push(userId); // Добавляем ID пользователя в список лайков
+      post.likesCount += 1; // Увеличиваем счетчик лайков
     } else {
-      // Удаляем лайк
-      post.likes.splice(likeIndex, 1);
-      post.likesCount -= 1;
+      // Если пользователь уже лайкнул пост
+      post.likes.splice(likeIndex, 1); // Удаляем ID пользователя из списка лайков
+      post.likesCount -= 1; // Уменьшаем счетчик лайков
     }
 
-    await post.save();
+    await post.save(); // Сохраняем изменения
 
     // Добавляем флаг isLiked для текущего пользователя
     const result = post.toObject();
     result.isLiked = post.likes.includes(userId);
 
-    res.json(result);
+    res.json(result); // Возвращаем обновленный пост
   } catch (error) {
-    res.status(500).json({ message: 'Ошибка при обработке лайка' });
-    console.error(error);
+    res.status(500).json({ message: 'Ошибка при обработке лайка' }); // Возвращаем ошибку сервера
+    console.error(error); // Выводим ошибку в консоль
   }
 };
 
 // Получение поста с информацией о лайке
 export const getPost = async (req, res) => {
+  // Функция для получения информации о посте
   try {
-    const post = await Post.findById(req.params.id)
-      .populate('author', 'username avatarUrl')
-      .populate('comments')
+    const post = await Post.findById(req.params.id) // Находим пост по ID
+      .populate('author', 'username avatarUrl') // Подгружаем информацию об авторе
+      .populate('comments') // Подгружаем комментарии
       .exec();
 
     if (!post) {
-      return res.status(404).json({ message: 'Пост не найден' });
+      // Проверяем, что пост существует
+      return res.status(404).json({ message: 'Пост не найден' }); // Возвращаем ошибку, если пост не найден
     }
 
     // Добавляем флаг isLiked если пользователь авторизован
     const result = post.toObject();
     if (req.userId) {
-      result.isLiked = post.likes.includes(req.userId);
+      // Если пользователь авторизован
+      result.isLiked = post.likes.includes(req.userId); // Проверяем, лайкнул ли пользователь пост
     }
 
-    res.json(result);
+    res.json(result); // Возвращаем информацию о посте
   } catch (error) {
-    res.status(500).json({ message: 'Ошибка при получении поста' });
-    console.error(error);
+    res.status(500).json({ message: 'Ошибка при получении поста' }); // Возвращаем ошибку сервера
+    console.error(error); // Выводим ошибку в консоль
   }
 };
